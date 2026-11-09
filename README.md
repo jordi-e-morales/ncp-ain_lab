@@ -36,12 +36,12 @@ Open <http://localhost:8765/>. Bind to `0.0.0.0` instead of localhost if others 
 
 ### 3. GitHub Pages (hosted, free)
 
-This repository ships a workflow in `.github/workflows/pages.yml` that publishes `main` to GitHub Pages on every push and enables Pages automatically on the first run.
+This repository ships a workflow in `.github/workflows/pages.yml` that publishes `main` to GitHub Pages on every push.
 
 1. Fork or push the repo to GitHub.
-2. In the repo: **Settings → Pages → Build and deployment → Source: GitHub Actions** (the workflow also does this on first run; the setting just makes it explicit).
-3. Push to `main` or run the workflow from the **Actions** tab (*Deploy to GitHub Pages → Run workflow*).
-4. The site appears at `https://<user>.github.io/<repo>/`, for this repo: <https://jordi-e-morales.github.io/ncp-ain_lab/>.
+2. **One-time, by a repo admin:** **Settings → Pages → Build and deployment → Source: GitHub Actions**. Until this is set the workflow fails at the *configure-pages* step, because the default `GITHUB_TOKEN` is not allowed to create the Pages site.
+3. Push to `main`, or re-run the workflow from the **Actions** tab (*Deploy to GitHub Pages → Run workflow*).
+4. After a minute the site is live at `https://<user>.github.io/<repo>/`. For this repo: <https://jordi-e-morales.github.io/ncp-ain_lab/>.
 
 The workflow also syntax-checks every JS file and refuses to deploy if the question bank fails to load.
 
