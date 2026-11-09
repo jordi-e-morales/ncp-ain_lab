@@ -5,66 +5,110 @@ question bank, flashcards, timed exam simulation and a stateful CLI lab for Infi
 
 Pure static HTML/CSS/JS. No build step, no backend, no external dependencies. Progress is kept in the browser's localStorage.
 
-## Deploy / run
+## Deployment
 
-Pick whichever fits. All of them serve the same files.
+The whole application is three things: `index.html`, the `css/` folder and the `js/` folder. There is nothing to compile, no package to install and no backend. "Deploying" means putting those files where a browser can load them. Pick one of the options below; they all serve exactly the same files.
 
-### 1. Just open the file (zero install)
+### Requirements
+
+* A current browser: Chrome, Edge, Firefox or Safari.
+* For option B: Python 3 **or** Node.js, whichever is already on the machine.
+* For option C: Docker.
+* No internet access is needed at runtime. The app never calls the network, so it works on an air-gapped laptop.
+
+### Step 1 · Get the files
 
 ```bash
 git clone https://github.com/jordi-e-morales/ncp-ain_lab.git
 cd ncp-ain_lab
 ```
 
-Then double-click `index.html` (or `start index.html` on Windows, `open index.html` on macOS, `xdg-open index.html` on Linux). Works fully offline.
+No git? Use **Code → Download ZIP** on GitHub and unzip it. Keep the folder structure intact (`index.html` next to `css/` and `js/`).
 
-### 2. Local web server (recommended for a shared machine or a classroom)
+### Step 2 · Choose how to serve it
 
-Any static server works. Examples:
+#### Option A · Open the file directly (one person, one laptop)
+
+Double-click `index.html`, or from a terminal:
+
+| OS | Command |
+|---|---|
+| Windows | `start index.html` |
+| macOS | `open index.html` |
+| Linux | `xdg-open index.html` |
+
+Works offline and needs nothing installed. Progress is saved in that browser.
+
+#### Option B · Local static web server (shared machine, classroom, LAN)
+
+Run **one** of these from inside the `ncp-ain_lab` folder:
 
 ```bash
-# Python 3 (preinstalled on most systems)
+# Python 3
 python -m http.server 8765
 ```
 
 ```bash
-# Node
+# Node.js
 npx serve -l 8765 .
 ```
 
-Open <http://localhost:8765/>. Bind to `0.0.0.0` instead of localhost if others on the LAN should reach it.
+```powershell
+# Windows PowerShell (Python installed from python.org)
+py -m http.server 8765
+```
 
-### 3. GitHub Pages (hosted, free)
+Then open <http://localhost:8765/>.
 
-This repository ships a workflow in `.github/workflows/pages.yml` that publishes `main` to GitHub Pages on every push.
-
-1. Fork or push the repo to GitHub.
-2. **One-time, by a repo admin:** **Settings → Pages → Build and deployment → Source: GitHub Actions**. Until this is set the workflow fails at the *configure-pages* step, because the default `GITHUB_TOKEN` is not allowed to create the Pages site.
-3. Push to `main`, or re-run the workflow from the **Actions** tab (*Deploy to GitHub Pages → Run workflow*).
-4. After a minute the site is live at `https://<user>.github.io/<repo>/`. For this repo: <https://jordi-e-morales.github.io/ncp-ain_lab/>.
-
-The workflow also syntax-checks every JS file and refuses to deploy if the question bank fails to load.
-
-### 4. Docker (nginx)
+To let other machines on the network use it, bind to all interfaces and share your IP:
 
 ```bash
-docker run --rm -p 8080:80 -v "$PWD":/usr/share/nginx/html:ro nginx:alpine
+python -m http.server 8765 --bind 0.0.0.0
+# others open http://<your-ip>:8765/
 ```
 
-Open <http://localhost:8080/>. Or build an image:
+Stop the server with `Ctrl-C`.
 
-```Dockerfile
-FROM nginx:alpine
-COPY . /usr/share/nginx/html
-```
+#### Option C · Docker (nginx)
+
+A `Dockerfile` is included.
 
 ```bash
-docker build -t ncp-ain-sim . && docker run --rm -p 8080:80 ncp-ain-sim
+docker build -t ncp-ain-sim .
+docker run --rm -d -p 8080:80 --name ncp-ain-sim ncp-ain-sim
 ```
 
-### Requirements
+Open <http://localhost:8080/>. Stop with `docker stop ncp-ain-sim`.
 
-A current browser (Chrome, Edge, Firefox, Safari). Nothing else. The app never calls the network, so it can run on an air-gapped laptop.
+Without building an image, mount the folder into a stock nginx:
+
+```bash
+docker run --rm -d -p 8080:80 -v "$PWD":/usr/share/nginx/html:ro nginx:alpine
+```
+
+#### Option D · Any existing web server or static hosting
+
+Copy `index.html`, `css/` and `js/` into the server's document root (nginx `/usr/share/nginx/html`, Apache `/var/www/html`, IIS `C:\inetpub\wwwroot`, an S3 bucket with static website hosting, Netlify, Vercel, GitHub Pages, an internal intranet share served over HTTP). Rules:
+
+* `index.html` must stay at the root of whatever path you publish, with `css/` and `js/` as siblings. Relative paths are used, so a sub-path like `https://intranet/tools/ncp-ain/` is fine.
+* Serve `.js` as `application/javascript` and `.css` as `text/css` (every default server configuration already does).
+* No rewrite rules, no server-side code, no environment variables.
+
+### Step 3 · Verify
+
+1. Open the URL. The **Dashboard** should show the six exam domains and "Question bank 180".
+2. Open **CLI Lab**, type `help` and press Enter. You should get the command list for `oob-mgmt-server`.
+3. Open **Practice → Mixed set → Start** and answer one question; the explanation box must appear.
+
+If the page is blank or the question bank reads 0, the `js/` folder was not copied next to `index.html` or the browser blocked the scripts (open the browser console: `F12` → Console).
+
+### Updating
+
+```bash
+git pull
+```
+
+Then reload the page (or rebuild the Docker image). Saved progress is unaffected: it lives in the browser, not in the files.
 
 ### Keeping progress
 
@@ -116,6 +160,7 @@ Each lab resets the fabric (with a fault when relevant), verifies tasks against 
 
 ```
 index.html                 app shell
+Dockerfile                 nginx image for option C
 css/app.css
 js/app.js                  UI: dashboard, study, flashcards, practice, exam, lab, commands, progress
 js/data/syllabus.js        official blueprint and weights
