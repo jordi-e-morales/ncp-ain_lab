@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>NCP-AIN Simulator</title>
+<link rel="stylesheet" href="css/app.css">
+</head>
+<body>
+<header class="top">
+  <div class="brand"><b>NCP-AIN</b> Simulator <span class="muted" style="font-weight:400">· InfiniBand + Spectrum-X exam trainer</span></div>
+  <nav class="tabs" id="tabs">
+    <button data-view="dash" class="active">Dashboard</button>
+    <button data-view="study">Study</button>
+    <button data-view="flash">Flashcards</button>
+    <button data-view="practice">Practice</button>
+    <button data-view="exam">Exam</button>
+    <button data-view="lab">CLI Lab</button>
+    <button data-view="cmds">Commands</button>
+    <button data-view="progress">Progress</button>
+  </nav>
+  <div class="spacer"></div>
+  <button class="ghost small" id="themeBtn" title="Toggle light/dark">◐</button>
+</header>
+<main>
+  <section class="view active" id="view-dash"></section>
+  <section class="view" id="view-study"></section>
+  <section class="view" id="view-flash"></section>
+  <section class="view" id="view-practice"></section>
+  <section class="view" id="view-exam"></section>
+  <section class="view" id="view-lab"></section>
+  <section class="view" id="view-cmds"></section>
+  <section class="view" id="view-progress"></section>
+</main>
+
+<!-- data -->
+<script src="js/data/syllabus.js"></script>
+<script src="js/data/concepts.js"></script>
+<script src="js/data/questions-ib-tshoot-dc.js"></script>
+<script src="js/data/questions-spx-k8s-auto.js"></script>
+<!-- simulator -->
+<script src="js/sim/lab.js"></script>
+<script src="js/sim/nvue.js"></script>
+<script src="js/sim/nvue-show.js"></script>
+<script src="js/sim/ibtools.js"></script>
+<script src="js/sim/ops.js"></script>
+<script src="js/sim/shell.js"></script>
+<script src="js/data/labs.js"></script>
+<!-- app -->
+<script src="js/app.js"></script>
+</body>
+</html>
